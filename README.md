@@ -92,25 +92,16 @@ In the day editor: **Repeat** (never/daily/weekly/monthly/yearly) and **Ends on*
 
 ---
 
-## ☁️ Cloud sync setup (optional)
+## ☁️ Cloud sync (optional, bring‑your‑own)
 
-The app works fully offline. For sync you have two choices:
+The app works fully offline (local storage + daily backups). **No cloud backend is bundled** — the released installer contains **no API keys**. If you want multi‑device sync, set up **your own** in the app: **⚙ Settings → Cloud sync**.
 
-**1. Folder sync (simplest):** Settings → Account & sync → pick **OneDrive** or **Google Drive**. Your notes are stored in that synced folder, so any device signed into the same drive account stays in sync. No accounts to create in‑app.
+- **OneDrive / Google Drive folder** — easiest, no accounts or keys; pick it from the Provider dropdown.
+- **Your own Firebase** — true ~1‑second realtime sync; paste your Web API key + Realtime Database URL.
 
-**2. Firebase login + realtime sync:** baked‑in account login with sub‑second push sync across devices.
+👉 **Step‑by‑step: [SYNC‑SETUP.md](SYNC-SETUP.md)**
 
-To enable Firebase (developer, one‑time):
-1. Create a Firebase project; **Authentication → Sign‑in method → enable Email/Password**.
-2. **Realtime Database → Create database**, then set its **Rules** so each user only touches their own data:
-   ```json
-   { "rules": { "calendars": { "$uid": {
-     ".read": "auth.uid === $uid", ".write": "auth.uid === $uid" } } } }
-   ```
-3. Copy `src/firebase-config.example.js` → `src/firebase-config.js` and fill in your **Web API Key** + **databaseURL**.
-4. `npm run build`. End‑users just open the app → Settings → **Create account / Sign in** → done.
-
-> The Firebase **Web API key is not a secret** (it ships in every client; security is enforced by the database rules). Even so, `src/firebase-config.js` is **gitignored** so it never lands in a public repo.
+> Building your own keyed copy? Copy `src/firebase-config.example.js` → `src/firebase-config.js` and fill it in — that file is **gitignored**, so keys never land in the repo.
 
 ---
 
