@@ -1,0 +1,56 @@
+{
+  "name": "desktop-calendar",
+  "version": "1.6.2",
+  "description": "A desktop calendar widget that lives on your desktop. Double-click a day to jot notes, right-click to color-code days.",
+  "main": "src/main.js",
+  "author": "Harshacal",
+  "license": "MIT",
+  "scripts": {
+    "geticon": "node scripts/make-icon.js",
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "build": "npm run geticon && electron-builder",
+    "sign": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/sign.ps1",
+    "install:local": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-local.ps1"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.harshacal.desktopcalendar",
+    "productName": "Desktop Calendar",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "build/icon.ico",
+      "node_modules/koffi/**/*"
+    ],
+    "asarUnpack": [
+      "node_modules/koffi/**/*"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "build/icon.ico",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Desktop Calendar",
+      "uninstallDisplayName": "Desktop Calendar"
+    }
+  },
+  "dependencies": {
+    "koffi": "^3.0.2"
+  }
+}

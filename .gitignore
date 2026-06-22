@@ -1,0 +1,21 @@
+# Dependencies & build output
+node_modules/
+dist/
+
+# Secrets / per-project config — DO NOT COMMIT.
+# Your real Firebase Web API key lives here; copy firebase-config.example.js
+# to src/firebase-config.js and fill it in locally.
+src/firebase-config.js
+
+# Signing certs / local session
+*.pfx
+build/HarshacalDesktopCalendar.cer
+
+# Logs / scratch
+*.log
+dbg-*.log
+elec-*.log
+
+# OS
+Thumbs.db
+.DS_Store

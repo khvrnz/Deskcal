@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self';" />
+  <title>Desktop Calendar</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app" class="app theme-light">
+    <header class="titlebar">
+      <div class="title-left">
+        <button id="prev" class="nav-btn" title="Previous month (PageUp)">‹</button>
+        <button id="today" class="today-btn" title="Jump to today (T)">Today</button>
+        <button id="next" class="nav-btn" title="Next month (PageDown)">›</button>
+      </div>
+      <div id="title-mid" class="title-mid" title="Pick month / year">
+        <span id="monthLabel" class="month-label">Month</span>
+        <span id="yearLabel" class="year-label">Year</span>
+      </div>
+      <div class="title-right">
+        <button id="quickBtn" class="icon-btn" title="Quick add (N)">➕</button>
+        <button id="agendaBtn" class="icon-btn" title="Upcoming (A)">📋</button>
+        <button id="searchBtn" class="icon-btn" title="Search ( / )">🔍</button>
+        <button id="settingsBtn" class="icon-btn" title="Settings">⚙</button>
+        <button id="lockBtn" class="icon-btn" title="Lock / unlock position &amp; size">🔒</button>
+      </div>
+    </header>
+
+    <div id="weekdays" class="weekdays"></div>
+    <div id="grid" class="grid"></div>
+
+    <div id="monthPicker" class="month-picker hidden"></div>
+
+    <!-- Quick add -->
+    <div id="quickPanel" class="search-panel hidden">
+      <div class="search-head">
+        <input id="quickInput" type="text" placeholder="Quick add, e.g. “lunch fri 1pm 🍔”" />
+        <button id="quickGo" class="btn primary small">Add</button>
+        <button id="quickClose" class="icon-btn">✕</button>
+      </div>
+      <p class="hint quick-hint">Understands today / tomorrow / weekday / “in 3 days” / “jun 20”, plus a time like 1pm or 14:30.</p>
+    </div>
+
+    <!-- Agenda / upcoming -->
+    <div id="agendaPanel" class="search-panel hidden">
+      <div class="search-head">
+        <strong>Upcoming (30 days)</strong>
+        <button id="agendaClose" class="icon-btn">✕</button>
+      </div>
+      <div id="agendaList" class="search-results"></div>
+    </div>
+
+    <!-- Search -->
+    <div id="searchPanel" class="search-panel hidden">
+      <div class="search-head">
+        <input id="searchInput" type="text" placeholder="Search notes &amp; tasks…" />
+        <button id="searchClose" class="icon-btn">✕</button>
+      </div>
+      <div id="searchResults" class="search-results"></div>
+    </div>
+
+    <!-- Note + task editor -->
+    <div id="editor" class="editor hidden">
+      <div class="editor-head">
+        <span id="editorDate" class="editor-date"></span>
+        <button id="editorClose" class="icon-btn">✕</button>
+      </div>
+
+      <div id="occBar" class="occ-bar hidden">
+        <span id="occText" class="occ-text"></span>
+        <div class="occ-actions">
+          <button id="occSeries" class="btn ghost small">Edit series</button>
+          <button id="occSkip" class="btn ghost small">Skip this day</button>
+        </div>
+      </div>
+
+      <div class="note-row">
+        <textarea id="editorText" placeholder="Write a note for this day…"></textarea>
+        <button id="emojiBtn" class="icon-btn emoji-btn" title="Insert emoji">😀</button>
+      </div>
+      <div id="emojiPanel" class="emoji-panel hidden"></div>
+
+      <div class="tasks-section">
+        <div class="tasks-title">Tasks</div>
+        <ul id="taskList" class="task-list"></ul>
+        <div class="task-add">
+          <input id="taskInput" type="text" placeholder="Add a task and press Enter" />
+          <button id="taskAddBtn" class="btn ghost small">Add</button>
+        </div>
+      </div>
+
+      <div class="meta-row">
+        <label class="meta-field">⏰ Remind at
+          <input id="editorRemind" type="time" />
+        </label>
+        <label class="meta-field">↔ Ends on
+          <input id="editorEnd" type="date" />
+        </label>
+        <label class="meta-field">🔁 Repeat
+          <select id="editorRepeat">
+            <option value="none">Never</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="swatches" id="swatches"></div>
+      <div class="editor-actions">
+        <button id="editorClear" class="btn ghost">Clear Day</button>
+        <button id="editorSave" class="btn primary">Save</button>
+      </div>
+    </div>
+
+    <div id="colorPopup" class="color-popup hidden"></div>
+
+    <!-- Settings modal -->
+    <div id="settingsModal" class="modal hidden">
+      <div class="modal-card">
+        <div class="modal-head">
+          <h2>Settings</h2>
+          <button id="settingsCloseBtn" class="icon-btn">✕</button>
+        </div>
+
+        <div class="setting-row">
+          <label>Theme</label>
+          <select id="setTheme"><option value="light">Light</option><option value="dark">Dark</option></select>
+        </div>
+        <div class="setting-row">
+          <label>Week starts on</label>
+          <select id="setWeekStart"><option value="0">Sunday</option><option value="1">Monday</option></select>
+        </div>
+
+        <div class="section-label">Appearance</div>
+        <div class="setting-row">
+          <label>Font</label>
+          <select id="setFont">
+            <option value="system">System</option>
+            <option value="sans">Sans Serif</option>
+            <option value="serif">Serif</option>
+            <option value="rounded">Rounded</option>
+            <option value="mono">Monospace</option>
+          </select>
+        </div>
+        <div class="setting-row"><label>Font size</label><input id="setFontScale" type="range" min="0.85" max="1.7" step="0.05" /></div>
+        <div class="setting-row">
+          <label>Text style</label>
+          <select id="setWeight"><option value="normal">Normal</option><option value="bold">Bold</option></select>
+        </div>
+        <div class="setting-row"><label>Italic</label><input id="setItalic" type="checkbox" /></div>
+        <div class="setting-row"><label>Day &amp; week spacing</label><input id="setSpacing" type="range" min="1" max="16" step="1" /></div>
+        <div class="setting-row"><label>Show week numbers</label><input id="setWeekNumbers" type="checkbox" /></div>
+        <div class="setting-row"><label>Borders around dates</label><input id="setBorders" type="checkbox" /></div>
+        <div class="setting-row"><label>Highlight weekends</label><input id="setHlWeekends" type="checkbox" /></div>
+        <div class="setting-row"><label>Background opacity<br><span class="hint">Text stays fully visible</span></label><input id="setOpacity" type="range" min="0.3" max="1" step="0.05" /></div>
+
+        <div class="section-label">Reminders &amp; tasks</div>
+        <div class="setting-row">
+          <label>Remind ahead by</label>
+          <select id="setLead">
+            <option value="0">At time</option>
+            <option value="5">5 min before</option>
+            <option value="10">10 min before</option>
+            <option value="15">15 min before</option>
+            <option value="30">30 min before</option>
+            <option value="60">1 hour before</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <label>Snooze (re-notify)</label>
+          <select id="setSnooze">
+            <option value="0">Off</option>
+            <option value="5">Every 5 min</option>
+            <option value="10">Every 10 min</option>
+            <option value="15">Every 15 min</option>
+            <option value="30">Every 30 min</option>
+          </select>
+        </div>
+        <div class="setting-row"><label>Roll over unfinished tasks to today<br><span class="hint">Moves past undone tasks forward</span></label><input id="setRollover" type="checkbox" /></div>
+
+        <div class="section-label">Desktop</div>
+        <div class="setting-row"><label>Pin to desktop (wallpaper)<br><span class="hint">Sits behind all windows like a widget</span></label><input id="setPin" type="checkbox" /></div>
+        <div class="setting-row"><label>Lock position &amp; size<br><span class="hint">Or use the 🔒 button, top-right</span></label><input id="setLocked" type="checkbox" /></div>
+        <div class="setting-row"><label>Always on top</label><input id="setAlwaysOnTop" type="checkbox" /></div>
+        <div class="setting-row"><label>Start with Windows</label><input id="setStartWithWindows" type="checkbox" /></div>
+
+        <div class="section-label" id="syncSectionLabel">Cloud sync</div>
+        <div class="setting-row" id="syncProviderRow">
+          <label>Provider</label>
+          <select id="setSync">
+            <option value="none">Off</option>
+            <option value="onedrive">OneDrive</option>
+            <option value="gdrive">Google Drive</option>
+            <option value="custom">Custom folder…</option>
+            <option value="firebase">Firebase (login, realtime)</option>
+          </select>
+        </div>
+        <p id="syncStatus" class="sync-status"></p>
+
+        <div id="firebasePanel" class="firebase-panel hidden">
+          <div id="fbConfigFields" class="fb-config">
+            <p class="hint">Developer setup (end-users don't see this once baked into the build):</p>
+            <input id="fbApiKey" type="text" placeholder="Firebase Web API key (AIzaSy…)" autocomplete="off" />
+            <input id="fbDbUrl" type="text" placeholder="Realtime Database URL (https://…firebasedatabase.app)" autocomplete="off" />
+            <button id="fbSaveConfig" class="btn ghost small">Save config</button>
+          </div>
+
+          <div id="fbLogin">
+            <div id="fbAuth" class="fb-auth">
+              <input id="fbEmail" type="email" placeholder="Email" autocomplete="off" />
+              <input id="fbPassword" type="password" placeholder="Password (min 6 chars)" autocomplete="off" />
+              <div class="fb-auth-btns">
+                <button id="fbSignIn" class="btn primary small">Sign in</button>
+                <button id="fbSignUp" class="btn ghost small">Create account</button>
+              </div>
+              <p id="fbError" class="fb-error"></p>
+            </div>
+          </div>
+
+          <div id="fbSignedIn" class="fb-signed-in hidden">
+            <span id="fbUser"></span>
+            <button id="fbSignOut" class="btn ghost small">Sign out</button>
+          </div>
+          <p id="fbStatus" class="sync-status"></p>
+        </div>
+
+        <div class="section-label">Data</div>
+        <div class="setting-row">
+          <label>Backup</label>
+          <div class="data-btns">
+            <button id="exportBtn" class="btn ghost small">Export</button>
+            <button id="importBtn" class="btn ghost small">Import</button>
+          </div>
+        </div>
+        <textarea id="dataBox" class="data-box hidden" placeholder="Paste exported JSON here, then press Apply Import"></textarea>
+        <button id="applyImportBtn" class="btn primary hidden">Apply Import</button>
+        <p class="version">Desktop Calendar v1.6.2 · N add · A agenda · / search · drag to move · ←↑↓→ navigate</p>
+      </div>
+    </div>
+  </div>
+  <script src="renderer.js"></script>
+</body>
+</html>
