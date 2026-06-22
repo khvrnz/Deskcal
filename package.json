@@ -1,6 +1,6 @@
 {
   "name": "desktop-calendar",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "A desktop calendar widget that lives on your desktop. Double-click a day to jot notes, right-click to color-code days.",
   "main": "src/main.js",
   "author": "Harshacal",

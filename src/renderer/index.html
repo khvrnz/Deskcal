@@ -203,10 +203,12 @@
 
         <div id="firebasePanel" class="firebase-panel hidden">
           <div id="fbConfigFields" class="fb-config">
-            <p class="hint">Developer setup (end-users don't see this once baked into the build):</p>
+            <p class="hint">Use your <b>own</b> free Firebase project to sync across devices. Paste its
+              Web API key + Realtime Database URL below, then Save. Full steps in
+              <b>SYNC-SETUP.md</b> on the project page. (No account needed for OneDrive/Google&nbsp;Drive folder sync instead.)</p>
             <input id="fbApiKey" type="text" placeholder="Firebase Web API key (AIzaSy…)" autocomplete="off" />
             <input id="fbDbUrl" type="text" placeholder="Realtime Database URL (https://…firebasedatabase.app)" autocomplete="off" />
-            <button id="fbSaveConfig" class="btn ghost small">Save config</button>
+            <button id="fbSaveConfig" class="btn ghost small">Save &amp; connect</button>
           </div>
 
           <div id="fbLogin">
@@ -238,7 +240,7 @@
         </div>
         <textarea id="dataBox" class="data-box hidden" placeholder="Paste exported JSON here, then press Apply Import"></textarea>
         <button id="applyImportBtn" class="btn primary hidden">Apply Import</button>
-        <p class="version">Desktop Calendar v1.6.2 · N add · A agenda · / search · drag to move · ←↑↓→ navigate</p>
+        <p class="version">Desktop Calendar v1.6.3 · N add · A agenda · / search · drag to move · ←↑↓→ navigate</p>
       </div>
     </div>
   </div>
