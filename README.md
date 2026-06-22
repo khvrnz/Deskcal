@@ -4,6 +4,8 @@ A lightweight **desktop calendar widget** for Windows that lives on your desktop
 
 > Inspired by desktopcal.com — rebuilt from scratch with reminders, recurring events, multi‑day events, search, natural‑language quick‑add, and cloud sync.
 
+![Desktop Calendar — a translucent month widget on the Windows desktop showing notes, checkable tasks, reminders, multi‑day and recurring events](docs/screenshot.jpg)
+
 ---
 
 ## ✨ Features
